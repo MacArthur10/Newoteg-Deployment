@@ -1,0 +1,370 @@
+// Unified NEWOTEG Backend Schema
+// Integrates: Reservation System (Your NEWOTEG) + Product Management (Collaborator's NEWOTEG-ECOMMERCE)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================================
+// AUTHENTICATION & USERS (From Your NEWOTEG Backend)
+// ============================================================================
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique @db.VarChar(255)
+  password  String     @db.VarChar(255)
+  fullName  String     @map("full_name") @db.VarChar(255)
+  phone     String?    @db.VarChar(20)
+  avatarUrl String?    @map("avatar_url")
+  role      UserRole   @default(CUSTOMER)
+  isActive  Boolean    @default(true) @map("is_active")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  reservations Reservation[]
+  auditLogs    AuditLog[]
+  customerProfile Customer?
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  CASHIER
+  CUSTOMER
+}
+
+// ========== CUSTOMERS & CLIENTS ==========
+
+model Customer {
+  id        String   @id @default(uuid())
+  userId    String?  @unique @map("user_id")
+  firstName String   @map("first_name") @db.VarChar(100)
+  lastName  String   @map("last_name") @db.VarChar(100)
+  email     String   @unique @db.VarChar(255)
+  phone     String?  @db.VarChar(20)
+  points    Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sales     Sale[]
+  reservations Reservation[]
+
+  @@map("customers")
+}
+
+// ========== CATEGORIES ==========
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique @db.VarChar(100)
+  description String?  @db.Text
+  imageUrl    String?  @map("image_url")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  products Product[]
+
+  @@map("categories")
+}
+
+// ========== ATTRIBUTES & VALUES ==========
+
+model Attribute {
+  id          String   @id @default(uuid())
+  name        String   @unique @db.VarChar(100)
+  type        String   @db.VarChar(50) // color, size, dimension, etc.
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  values AttributeValue[]
+  variantAttributes VariantAttribute[]
+
+  @@map("attributes")
+}
+
+model AttributeValue {
+  id          String   @id @default(uuid())
+  attributeId String   @map("attribute_id")
+  value       String   @db.VarChar(255)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  attribute Attribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  variantAttributes VariantAttribute[]
+
+  @@unique([attributeId, value])
+  @@map("attribute_values")
+}
+
+// ========== PRODUCTS & VARIANTS ==========
+
+model Product {
+  id          String   @id @default(uuid())
+  categoryId  String   @map("category_id")
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  brand       String?  @db.VarChar(100)
+  imageUrl    String?  @map("image_url")
+  status      String   @default("ACTIVE") @db.VarChar(50) // ACTIVE, INACTIVE, DISCONTINUED
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  category     Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  variants     ProductVariant[]
+  reservationItems ReservationItem[]
+  saleItems    SaleItem[]
+
+  @@index([categoryId])
+  @@map("products")
+}
+
+model ProductVariant {
+  id                String   @id @default(uuid())
+  productId         String   @map("product_id")
+  sku               String   @unique @db.VarChar(100)
+  barcode           String?  @unique @db.VarChar(50) @map("barcode")
+  purchasePrice     Float    @map("purchase_price") // Prix d'achat
+  salePrice         Float    @map("sale_price") // Prix de vente
+  stock             Int      @default(0)
+  lowStockThreshold Int      @default(10) @map("low_stock_threshold")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  product           Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributes        VariantAttribute[]
+  stockMovements    StockMovement[]
+  reservationItems  ReservationItem[]
+  saleItems         SaleItem[]
+  purchaseItems     PurchaseItem[]
+
+  @@index([productId])
+  @@map("product_variants")
+}
+
+model VariantAttribute {
+  id              String   @id @default(uuid())
+  variantId       String   @map("variant_id")
+  attributeId     String   @map("attribute_id")
+  attributeValueId String? @map("attribute_value_id")
+  customValue     String?  @map("custom_value") @db.VarChar(255)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  variant       ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  attribute     Attribute      @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  attributeValue AttributeValue? @relation(fields: [attributeValueId], references: [id], onDelete: SetNull)
+
+  @@unique([variantId, attributeId])
+  @@map("variant_attributes")
+}
+
+// ========== INVENTORY & STOCK ==========
+
+model Supplier {
+  id        String   @id @default(uuid())
+  name      String   @unique @db.VarChar(255)
+  email     String?  @db.VarChar(255)
+  phone     String?  @db.VarChar(20)
+  address   String?  @db.Text
+  city      String?  @db.VarChar(100)
+  country   String?  @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  purchases Purchase[]
+
+  @@map("suppliers")
+}
+
+model StockMovement {
+  id              String   @id @default(uuid())
+  variantId       String   @map("variant_id")
+  movementType    String   @db.VarChar(50) // IN, OUT, ADJUSTMENT, DAMAGE
+  quantity        Int
+  reason          String?  @db.VarChar(255)
+  notes           String?  @db.Text
+  referenceType   String?  @map("reference_type") @db.VarChar(50) // PURCHASE, SALE, ADJUSTMENT
+  referenceId     String?  @map("reference_id")
+  createdBy       String?  @map("created_by")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@index([variantId])
+  @@index([createdAt])
+  @@map("stock_movements")
+}
+
+// ========== PURCHASES ==========
+
+model Purchase {
+  id              String   @id @default(uuid())
+  supplierId      String   @map("supplier_id")
+  purchaseNumber  String   @unique @db.VarChar(50)
+  totalAmount     Float    @default(0) @map("total_amount")
+  paymentStatus   String   @default("UNPAID") @db.VarChar(50) // PAID, PARTIAL, UNPAID
+  paymentMethod   String?  @map("payment_method") @db.VarChar(50) // CASH, BANK_TRANSFER, CHEQUE, MOBILE_MONEY
+  purchaseDate    DateTime @default(now()) @map("purchase_date")
+  dueDate         DateTime? @map("due_date")
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  supplier     Supplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  items        PurchaseItem[]
+
+  @@index([supplierId])
+  @@index([purchaseDate])
+  @@map("purchases")
+}
+
+model PurchaseItem {
+  id          String   @id @default(uuid())
+  purchaseId  String   @map("purchase_id")
+  variantId   String?  @map("variant_id")
+  quantity    Int
+  unitPrice   Float    @map("unit_price")
+  totalPrice  Float    @map("total_price")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  purchase Purchase                 @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  variant  ProductVariant?          @relation(fields: [variantId], references: [id], onDelete: SetNull)
+
+  @@index([purchaseId])
+  @@map("purchase_items")
+}
+
+// ========== SALES ==========
+
+model Sale {
+  id              String   @id @default(uuid())
+  customerId      String?  @map("customer_id")
+  saleNumber      String   @unique @db.VarChar(50)
+  totalAmount     Float    @default(0) @map("total_amount")
+  paymentStatus   String   @default("PENDING") @db.VarChar(50) // PAID, PARTIAL, PENDING
+  paymentMethod   String   @db.VarChar(50) // CASH, CARD, BANK_TRANSFER, MOBILE_MONEY
+  discountAmount  Float    @default(0) @map("discount_amount")
+  saleDate        DateTime @default(now()) @map("sale_date")
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  customer   Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items      SaleItem[]
+  cashFlow   CashFlow?
+
+  @@index([customerId])
+  @@index([saleDate])
+  @@map("sales")
+}
+
+model SaleItem {
+  id         String   @id @default(uuid())
+  saleId     String   @map("sale_id")
+  variantId  String?  @map("variant_id")
+  productId  String?  @map("product_id")
+  quantity   Int
+  unitPrice  Float    @map("unit_price")
+  totalPrice Float    @map("total_price")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  sale     Sale            @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  variant  ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  product  Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([saleId])
+  @@map("sale_items")
+}
+
+// ========== RESERVATIONS ==========
+
+model Reservation {
+  id        String   @id @default(uuid())
+  customerId String  @map("customer_id")
+  userId    String?  @map("user_id")
+  status    String   @default("ACTIVE") @db.VarChar(50) // ACTIVE, EXPIRED, COMPLETED, CANCELLED
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  customer Customer?         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user     User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items    ReservationItem[]
+
+  @@index([customerId])
+  @@index([expiresAt])
+  @@map("reservations")
+}
+
+model ReservationItem {
+  id            String   @id @default(uuid())
+  reservationId String   @map("reservation_id")
+  variantId     String?  @map("variant_id")
+  productId     String?  @map("product_id")
+  quantity      Int
+  reservedPrice Float    @map("reserved_price")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  reservation Reservation     @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  variant     ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  product     Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([reservationId])
+  @@map("reservation_items")
+}
+
+// ========== CASH REGISTER ==========
+
+model CashFlow {
+  id            String   @id @default(uuid())
+  saleId        String?  @unique @map("sale_id")
+  transactionType String  @default("SALE") @db.VarChar(50) // SALE, EXPENSE, REFUND, OPENING, CLOSING
+  amount        Float
+  description   String?  @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  sale Sale? @relation(fields: [saleId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@map("cash_flows")
+}
+
+// ========== AUDIT & LOGS ==========
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   @db.VarChar(255)
+  entity    String   @db.VarChar(100)
+  entityId  String   @db.VarChar(500) @map("entity_id")
+  userId    String?  @map("user_id")
+  changes   String?  @db.Text // JSON stringified
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([entity])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

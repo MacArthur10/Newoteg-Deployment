@@ -1,0 +1,356 @@
+@use '../../styles/variables' as *;
+
+// ══════════════════════════════════════════════════════════════
+// About Page
+// ══════════════════════════════════════════════════════════════
+.about-page {
+    padding-top: 80px; // Espace header fixe
+    background-color: $color-background;
+}
+
+// ── Hero ─────────────────────────────────────────────────────
+.about-hero {
+    padding: $spacing-3xl 0;
+    background: $color-surface;
+
+    &__content {
+        display: flex;
+        align-items: center;
+        gap: $spacing-3xl;
+
+        @media (max-width: $breakpoint-md) {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    &__text {
+        flex: 1;
+    }
+
+    &__tag {
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        color: $color-secondary;
+        text-transform: uppercase;
+        font-weight: $font-weight-bold;
+        margin-bottom: $spacing-md;
+        display: block;
+    }
+
+    h1 {
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        font-weight: $font-weight-medium;
+        color: $color-text;
+        margin-bottom: $spacing-lg;
+        line-height: $line-height-tight;
+
+        strong {
+            font-weight: $font-weight-extrabold;
+        }
+    }
+
+    p {
+        font-size: 14px;
+        line-height: $line-height-relaxed;
+        color: $color-text-body;
+        margin-bottom: $spacing-sm;
+    }
+
+    &__image {
+        flex: 0 0 45%;
+        border-radius: $border-radius-xl;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+        }
+
+        @media (max-width: $breakpoint-md) {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+}
+
+// ── Milestones ───────────────────────────────────────────────
+.about-milestones {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-xl;
+    padding: $spacing-3xl 0;
+
+    @media (max-width: $breakpoint-md) {
+        grid-template-columns: 1fr;
+        gap: $spacing-lg;
+    }
+}
+
+.milestone-card {
+    text-align: center;
+    padding: $spacing-xl $spacing-lg;
+    border: 1px solid rgba($color-border, 0.5);
+    border-radius: $border-radius-lg;
+    transition: box-shadow $transition-base, transform $transition-base;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-md;
+    }
+
+    &__icon {
+        width: 48px;
+        height: 48px;
+        border-radius: $border-radius-md;
+        background: rgba($color-primary, 0.08);
+        color: $color-primary;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto $spacing-md;
+    }
+
+    &__year {
+        font-size: $font-size-xl;
+        font-weight: $font-weight-extrabold;
+        color: $color-text;
+        margin-bottom: $spacing-xs;
+    }
+
+    &__desc {
+        font-size: 13px;
+        color: $color-text-body;
+        line-height: $line-height-relaxed;
+    }
+}
+
+// ── Panoramic Image ──────────────────────────────────────────
+.about-image-banner {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 0;
+    margin-bottom: $spacing-3xl;
+    max-height: 380px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+}
+
+// ── Contact Section ──────────────────────────────────────────
+.about-contact {
+    padding-bottom: $spacing-3xl;
+
+    &__title {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-extrabold;
+        color: $color-text;
+        text-align: center;
+        margin-bottom: $spacing-xs;
+    }
+
+    &__subtitle {
+        font-size: 14px;
+        color: $color-text-body;
+        text-align: center;
+        max-width: 580px;
+        margin: 0 auto $spacing-2xl;
+        line-height: $line-height-relaxed;
+    }
+
+    &__grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: $spacing-3xl;
+        align-items: start;
+
+        @media (max-width: $breakpoint-md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    // ── Form ──
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-md;
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: $spacing-xs;
+
+            label {
+                font-size: 12px;
+                font-weight: $font-weight-bold;
+                color: $color-text;
+            }
+
+            input,
+            textarea {
+                width: 100%;
+                padding: 0.65rem 0.85rem;
+                border: 1px solid $color-border;
+                border-radius: $border-radius-sm;
+                font-size: 13px;
+                color: $color-text;
+                background: $color-surface;
+                transition: border-color $transition-fast;
+
+                &::placeholder {
+                    color: $color-secondary-light;
+                }
+
+                &:focus {
+                    outline: none;
+                    border-color: $color-primary;
+                    box-shadow: 0 0 0 3px rgba($color-primary, 0.08);
+                }
+            }
+
+            textarea {
+                resize: vertical;
+                min-height: 100px;
+            }
+        }
+    }
+
+    &__row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: $spacing-md;
+    }
+
+    &__submit {
+        width: 100%;
+        padding: 0.75rem;
+        background: $color-primary-dark;
+        color: $color-surface;
+        font-size: 14px;
+        font-weight: $font-weight-bold;
+        border: none;
+        border-radius: $border-radius-sm;
+        cursor: pointer;
+        transition: opacity $transition-fast;
+
+        &:hover {
+            opacity: 0.9;
+        }
+    }
+
+    // ── Info Cards ──
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-xl;
+        padding-top: $spacing-md;
+    }
+}
+
+.info-card {
+    display: flex;
+    gap: $spacing-md;
+    align-items: flex-start;
+
+    svg {
+        flex-shrink: 0;
+        color: $color-primary;
+        margin-top: 2px;
+    }
+
+    h4 {
+        font-size: 14px;
+        font-weight: $font-weight-bold;
+        color: $color-text;
+        margin-bottom: 2px;
+    }
+
+    p {
+        font-size: 13px;
+        color: $color-text-body;
+        line-height: $line-height-relaxed;
+    }
+}
+
+// ── Legal Section ────────────────────────────────────────────
+.about-legal {
+    padding-bottom: $spacing-3xl;
+
+    &__title {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-extrabold;
+        color: $color-text;
+        margin-bottom: $spacing-lg;
+    }
+
+    &__tabs {
+        display: flex;
+        gap: $spacing-sm;
+        margin-bottom: $spacing-xl;
+    }
+
+    &__tab {
+        padding: 0.45rem 1rem;
+        font-size: 12px;
+        font-weight: $font-weight-bold;
+        border-radius: $border-radius-sm;
+        cursor: pointer;
+        border: 1px solid $color-border;
+        color: $color-text-body;
+        background: $color-surface;
+        transition: all $transition-fast;
+
+        &--active {
+            background: $color-primary-dark;
+            color: $color-surface;
+            border-color: $color-primary-dark;
+        }
+
+        &:hover:not(&--active) {
+            border-color: $color-primary;
+            color: $color-primary;
+        }
+    }
+
+    &__content {
+        h3 {
+            font-size: 15px;
+            font-weight: $font-weight-bold;
+            color: $color-text;
+            margin: $spacing-xl 0 $spacing-sm;
+
+            &:first-child {
+                margin-top: 0;
+            }
+        }
+
+        p {
+            font-size: 13px;
+            color: $color-text-body;
+            line-height: $line-height-relaxed;
+            margin-bottom: $spacing-sm;
+        }
+
+        ul {
+            padding-left: $spacing-xl;
+            margin: $spacing-sm 0;
+
+            li {
+                font-size: 13px;
+                color: $color-text-body;
+                line-height: $line-height-relaxed;
+                margin-bottom: $spacing-xs;
+
+                &::marker {
+                    color: $color-primary;
+                }
+            }
+        }
+    }
+}
