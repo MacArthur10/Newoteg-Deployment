@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Lock, Mail, LogIn } from 'lucide-react';
 import { motion } from 'motion/react';
+import { API_ENDPOINTS } from '../config/api';
 
 interface LoginProps {
   onLoginSuccess: () => void;
@@ -18,7 +19,7 @@ export const Login = ({ onLoginSuccess }: LoginProps) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
+      const response = await fetch(API_ENDPOINTS.auth.login, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
