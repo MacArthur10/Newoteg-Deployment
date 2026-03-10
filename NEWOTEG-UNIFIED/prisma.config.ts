@@ -1,4 +1,4 @@
-export const prismaConfig = {
+export default {
   datasources: {
     db: {
       url: process.env.DATABASE_URL,
