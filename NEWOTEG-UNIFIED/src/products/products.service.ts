@@ -201,6 +201,53 @@ export class ProductsService {
     });
   }
 
+  // -- new variant CRUD --------------------------------------------------
+  async createVariant(productId: string, data: {
+    sku: string;
+    purchasePrice: number;
+    salePrice: number;
+    stock: number;
+  }) {
+    // ensure product exists
+    const product = await this.db.product.findUnique({ where: { id: productId } });
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    return this.db.productVariant.create({
+      data: {
+        productId,
+        sku: data.sku,
+        purchasePrice: data.purchasePrice,
+        salePrice: data.salePrice,
+        stock: data.stock,
+      },
+    });
+  }
+
+  async updateVariant(variantId: string, input: AdminUpdateVariantDto) {
+    const variant = await this.db.productVariant.findUnique({ where: { id: variantId } });
+    if (!variant) {
+      throw new NotFoundException('Variant not found');
+    }
+    return this.db.productVariant.update({
+      where: { id: variantId },
+      data: {
+        ...(input.sku !== undefined ? { sku: input.sku } : {}),
+        ...(input.purchasePrice !== undefined ? { purchasePrice: input.purchasePrice } : {}),
+        ...(input.salePrice !== undefined ? { salePrice: input.salePrice } : {}),
+        ...(input.stock !== undefined ? { stock: input.stock } : {}),
+      },
+    });
+  }
+
+  async deleteVariant(variantId: string) {
+    const variant = await this.db.productVariant.findUnique({ where: { id: variantId } });
+    if (!variant) {
+      throw new NotFoundException('Variant not found');
+    }
+    return this.db.productVariant.delete({ where: { id: variantId } });
+  }
+
   async createCategory(input: AdminCreateCategoryDto) {
     return this.db.category.create({
       data: {

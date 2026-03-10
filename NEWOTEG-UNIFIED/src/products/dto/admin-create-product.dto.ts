@@ -1,4 +1,7 @@
-import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsNumber, IsOptional, IsString, Min, ValidateNested, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
+
+// variant DTOs moved below because they are referenced in this file
 
 export class AdminCreateProductDto {
   @IsString()
@@ -20,6 +23,15 @@ export class AdminCreateProductDto {
   @IsString()
   categoryName?: string;
 
+  // when creating a product we can also optionally provide multiple variants
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AdminCreateVariantDto)
+  variants?: AdminCreateVariantDto[];
+}
+
+export class AdminCreateVariantDto {
   @IsString()
   sku: string;
 

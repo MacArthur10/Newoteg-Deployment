@@ -18,6 +18,7 @@ import { AuthUser } from '../common/types/auth-user.type';
 import { AdminCreateProductDto } from './dto/admin-create-product.dto';
 import { AdminUpdateProductDto } from './dto/admin-update-product.dto';
 import { AdminUpdateVariantStockDto } from './dto/admin-update-variant-stock.dto';
+import { AdminUpdateVariantDto } from './dto/admin-update-variant.dto';
 import { AdminCreateCategoryDto } from './dto/admin-create-category.dto';
 import { AdminUpdateCategoryDto } from './dto/admin-update-category.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -139,6 +140,37 @@ export class ProductsController {
   ) {
     assertAdmin(user);
     return this.productsService.uploadCategoryImage(file);
+  }
+
+  @Post('admin/variants')
+  @UseGuards(JwtAuthGuard)
+  createVariant(
+    @CurrentUser() user: AuthUser,
+    @Body() input: AdminCreateVariantDto,
+  ) {
+    assertAdmin(user);
+    return this.productsService.createVariant(input.productId, input);
+  }
+
+  @Patch('admin/variants/:variantId')
+  @UseGuards(JwtAuthGuard)
+  updateVariant(
+    @CurrentUser() user: AuthUser,
+    @Param('variantId') variantId: string,
+    @Body() input: AdminUpdateVariantDto,
+  ) {
+    assertAdmin(user);
+    return this.productsService.updateVariant(variantId, input);
+  }
+
+  @Delete('admin/variants/:variantId')
+  @UseGuards(JwtAuthGuard)
+  deleteVariant(
+    @CurrentUser() user: AuthUser,
+    @Param('variantId') variantId: string,
+  ) {
+    assertAdmin(user);
+    return this.productsService.deleteVariant(variantId);
   }
 
   @Patch('admin/variants/:variantId/stock')

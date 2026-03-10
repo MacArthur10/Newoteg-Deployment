@@ -70,9 +70,9 @@ const About = () => {
                 </div>
             </section>
 
-            <section className="about-image-banner">
+            {/* <section className="about-image-banner">
                 <img src="/images/cameroon-cityscape.png" alt="Cameroon Cityscape" />
-            </section>
+            </section> */}
 
             {/* ── Contact Section ─────────────────────────── */}
             <section className="about-contact container">

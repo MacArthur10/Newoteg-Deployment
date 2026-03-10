@@ -30,8 +30,8 @@ async function bootstrap() {
 
   const port = process.env.PORT || 4000;
 
-  await app.listen(port);
-  console.log(`\n🚀 NEWOTEG Unified Backend running on: http://localhost:${port}/${apiPrefix}`);
+  await app.listen(port, '0.0.0.0');
+  console.log(`\n🚀 NEWOTEG Unified Backend running on: http://0.0.0.0:${port}/${apiPrefix}`);
 }
 
 bootstrap().catch((err) => {
