@@ -19,7 +19,7 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION') || '7d',
+          expiresIn: configService.get<string>('JWT_EXPIRATION') || '7d' as any,
         },
       }),
     }),
