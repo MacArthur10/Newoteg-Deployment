@@ -15,7 +15,7 @@ const Footer = () => {
                             NEWOTEG SARL
                         </div>
                         <p className="footer__description">
-                            Your leading partner for premium industrial electronics and semi-conductors across North Africa.
+                            Your leading partner for premium industrial electronics and semi-conductors in Cameroon.
                         </p>
                     </div>
 

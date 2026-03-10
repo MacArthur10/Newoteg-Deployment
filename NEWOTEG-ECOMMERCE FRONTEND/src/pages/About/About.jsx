@@ -59,7 +59,7 @@ const About = () => {
                         <Trophy size={24} />
                     </div>
                     <h3 className="milestone-card__year">2019</h3>
-                    <p className="milestone-card__desc">Opened new Phone, Tablets offices to help larger European markets.</p>
+                    <p className="milestone-card__desc">Opened new offices in Yaoundé and Douala to serve the growing Cameroonian electronics market.</p>
                 </div>
                 <div className="milestone-card">
                     <div className="milestone-card__icon">
@@ -70,9 +70,8 @@ const About = () => {
                 </div>
             </section>
 
-            {/* ── Paris Image ────────────────────────────── */}
             <section className="about-image-banner">
-                <img src="/images/paris-skyline.png" alt="Paris Skyline" />
+                <img src="/images/cameroon-cityscape.png" alt="Cameroon Cityscape" />
             </section>
 
             {/* ── Contact Section ─────────────────────────── */}
@@ -111,14 +110,14 @@ const About = () => {
                             <Phone size={20} />
                             <div>
                                 <h4>Phone</h4>
-                                <p>+1 (0) 01 XX YY ZZ</p>
+                                <p>+237 6 12 34 56 78</p>
                             </div>
                         </div>
                         <div className="info-card">
                             <MapPin size={20} />
                             <div>
                                 <h4>Headquarters</h4>
-                                <p>Douala Deido, 211XX Akwa,<br />France</p>
+                                <p>Douala Deido, 211XX Akwa,<br />Cameroon</p>
                             </div>
                         </div>
                     </div>

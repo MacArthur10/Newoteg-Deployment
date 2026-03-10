@@ -143,7 +143,7 @@ const Checkout = () => {
                                             </div>
                                             {shipping === 'standard' ? <CheckCircle2 size={20} className="text-primary" /> : <Circle size={20} className="text-muted" />}
                                         </div>
-                                        <div className="checkout__option-price text-primary">$5,000</div>
+                                        <div className="checkout__option-price text-primary">{formatFCFA(5000)}</div>
                                     </div>
 
                                     <div
@@ -267,7 +267,7 @@ const Checkout = () => {
                                     </div>
                                     <div className="checkout__summary-line">
                                         <span>Taxes</span>
-                                        <strong>$0</strong>
+                                        <strong>{formatFCFA(0)}</strong>
                                     </div>
                                 </div>
                                 <div className="checkout__summary-total">

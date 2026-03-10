@@ -162,7 +162,7 @@ const ProductDetails = () => {
                                 </div>
                                 <div className="product-details__logistics-item">
                                     <Truck size={16} />
-                                    <span>Warehouse: North Africa Logistics Hub</span>
+                                    <span>Warehouse: Douala Logistics Center</span>
                                 </div>
                             </div>
 
