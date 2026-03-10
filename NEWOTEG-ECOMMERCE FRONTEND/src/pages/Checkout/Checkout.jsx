@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Trash2, Plus, Minus, CheckCircle2, Circle, Lock, ShieldCheck, ShoppingCart } from 'lucide-react';
+import { Trash2, Plus, Minus, CheckCircle2, Circle, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { formatFCFA } from '../../utils/currency';
 import { useCart } from '../../context/CartContext';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,6 @@ import './Checkout.scss';
 const Checkout = () => {
     const { cartItems: cart, updateQuantity, removeFromCart: remove, clearCart } = useCart();
     const [shipping, setShipping] = useState('standard');
-    const [payment, setPayment] = useState('om');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [submitSuccess, setSubmitSuccess] = useState('');
@@ -19,7 +18,6 @@ const Checkout = () => {
         email: '',
         phone: '',
         address: '',
-        paymentNumber: '',
     });
 
     const subtotal = cart.reduce((acc, item) => acc + item.retailPrice * item.quantity, 0);
@@ -205,53 +203,7 @@ const Checkout = () => {
                         {/* 右侧区域 : Payment & Order Summary */}
                         <div className="checkout__right">
 
-                            {/* Payment Method Section */}
-                            <section className="checkout__section">
-                                <h2 className="checkout__section-title">Payment Method</h2>
-                                <div className="checkout__payment-options">
-                                    <div
-                                        className={`checkout__option-box ${payment === 'om' ? 'checkout__option-box--active' : ''}`}
-                                        onClick={() => setPayment('om')}
-                                    >
-                                        <div className="checkout__payment-logo checkout__payment-logo--om">OM</div>
-                                        <div className="checkout__payment-info">
-                                            <h4>Orange Money</h4>
-                                            <p>Direct mobile payment</p>
-                                        </div>
-                                        <div className="checkout__payment-radio">
-                                            {payment === 'om' ? <span className="radio-inner" /> : null}
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        className={`checkout__option-box ${payment === 'momo' ? 'checkout__option-box--active' : ''}`}
-                                        onClick={() => setPayment('momo')}
-                                    >
-                                        <div className="checkout__payment-logo checkout__payment-logo--momo">MTN</div>
-                                        <div className="checkout__payment-info">
-                                            <h4>MTN Mobile Money</h4>
-                                            <p>Direct mobile payment</p>
-                                        </div>
-                                        <div className="checkout__payment-radio">
-                                            {payment === 'momo' ? <span className="radio-inner" /> : null}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="checkout__form-group" style={{ marginTop: '1.5rem' }}>
-                                    <label>Payment Number</label>
-                                    <input
-                                        type="tel"
-                                        placeholder="+237 6xx xxx xxx"
-                                        value={customerForm.paymentNumber}
-                                        onChange={(e) => setCustomerForm((prev) => ({ ...prev, paymentNumber: e.target.value }))}
-                                    />
-                                </div>
-                                <div className="checkout__secure-note">
-                                    <Lock size={12} />
-                                    Your transaction is secured by SSL encryption
-                                </div>
-                            </section>
+                            {/* Reservation only – payment section removed */}
 
                             {/* Order Summary Section */}
                             <section className="checkout__section checkout__summary">
