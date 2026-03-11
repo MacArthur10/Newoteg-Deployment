@@ -23,6 +23,26 @@ export class AdminCreateProductDto {
   @IsString()
   categoryName?: string;
 
+  // single variant properties (optional, for compatibility)
+  @IsOptional()
+  @IsString()
+  sku?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  purchasePrice?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  salePrice?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  stock?: number;
+
   // when creating a product we can also optionally provide multiple variants
   @IsOptional()
   @IsArray()

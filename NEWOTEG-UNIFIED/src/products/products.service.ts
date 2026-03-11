@@ -1,8 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { AdminCreateProductDto } from './dto/admin-create-product.dto';
+import { AdminCreateProductDto, AdminCreateVariantDto } from './dto/admin-create-product.dto';
 import { AdminUpdateProductDto } from './dto/admin-update-product.dto';
 import { AdminUpdateVariantStockDto } from './dto/admin-update-variant-stock.dto';
+import { AdminUpdateVariantDto } from './dto/admin-update-variant.dto';
 import { AdminCreateCategoryDto } from './dto/admin-create-category.dto';
 import { AdminUpdateCategoryDto } from './dto/admin-update-category.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -86,6 +87,21 @@ export class ProductsService {
       },
     });
 
+    // Build variant data - support both multiple variants array and single variant properties
+    let variantsData = {};
+    if (input.variants && input.variants.length > 0) {
+      variantsData = { create: input.variants };
+    } else if (input.sku) {
+      variantsData = {
+        create: {
+          sku: input.sku,
+          purchasePrice: input.purchasePrice || 0,
+          salePrice: input.salePrice || 0,
+          stock: input.stock || 0,
+        },
+      };
+    }
+
     return this.db.product.create({
       data: {
         categoryId: category.id,
@@ -94,14 +110,7 @@ export class ProductsService {
         brand: input.brand,
         imageUrl: input.imageUrl,
         status: 'ACTIVE',
-        variants: {
-          create: {
-            sku: input.sku,
-            purchasePrice: input.purchasePrice,
-            salePrice: input.salePrice,
-            stock: input.stock,
-          },
-        },
+        ...(Object.keys(variantsData).length > 0 ? { variants: variantsData } : {}),
       },
       include: {
         category: true,
