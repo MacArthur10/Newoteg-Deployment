@@ -19,7 +19,6 @@ import { AdminCreateProductDto, AdminCreateVariantDto } from './dto/admin-create
 import { AdminUpdateProductDto } from './dto/admin-update-product.dto';
 import { AdminUpdateVariantStockDto } from './dto/admin-update-variant-stock.dto';
 import { AdminUpdateVariantDto } from './dto/admin-update-variant.dto';
-import { AdminUpdateVariantDto } from './dto/admin-update-variant.dto';
 import { AdminCreateCategoryDto } from './dto/admin-create-category.dto';
 import { AdminUpdateCategoryDto } from './dto/admin-update-category.dto';
 import { FileInterceptor } from '@nestjs/platform-express';

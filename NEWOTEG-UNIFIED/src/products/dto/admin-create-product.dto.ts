@@ -53,6 +53,9 @@ export class AdminCreateProductDto {
 
 export class AdminCreateVariantDto {
   @IsString()
+  productId: string;
+
+  @IsString()
   sku: string;
 
   @IsNumber()
