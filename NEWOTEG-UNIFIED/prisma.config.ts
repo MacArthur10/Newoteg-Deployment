@@ -1,3 +1,7 @@
 export default {
-  seed: './prisma/seed.ts',
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
 };
